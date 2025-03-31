@@ -9,19 +9,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import io.github.caioosm.libraryapi.security.CustomUserDetailsService;
 import io.github.caioosm.libraryapi.security.LoginSocialSuccessHandler;
-import io.github.caioosm.libraryapi.services.UsuarioService;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
-public class SecurityConfiguration {
+public class SecurityConfiguration { // resource server configuration
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, LoginSocialSuccessHandler successHandler) throws Exception {
@@ -45,33 +42,25 @@ public class SecurityConfiguration {
                         .loginPage("/login")
                         .successHandler(successHandler);
                 })
+                .oauth2ResourceServer(oauth2Rs -> oauth2Rs.jwt(Customizer.withDefaults()))
                 .build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
-
-    // @Bean
-    public UserDetailsService userDetailsService(UsuarioService usuarioService) {
-//        UserDetails user1 = User.builder()
-//                .username("user")
-//                .password(passwordEncoder.encode("123"))
-//                .roles("USER")
-//                .build();
-//
-//        UserDetails user2 = User.builder()
-//                .username("admin")
-//                .password(passwordEncoder.encode("321"))
-//                .roles("ADMIN")
-//                .build();
-
-        return new CustomUserDetailsService(usuarioService);
-    }
-
+    //configura o prefix ROLE
     @Bean
     public GrantedAuthorityDefaults grantedAuthorityDefaults(){
         return new GrantedAuthorityDefaults("");
+    }
+
+    //configura no token jwt o prefix SCOPE
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter(){
+        var authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthorityPrefix("");
+
+        var converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+        return converter;
     }
 }
