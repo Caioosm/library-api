@@ -19,3 +19,20 @@ spring:
                     google:
                         client-id: 821140140382-3nhrnmenm7hmkhtbpqph7vsrh5cvlk5c.apps.googleusercontent.com
                         client-secret: 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
+
+logging:
+    file:
+        name: app.log
+    level:
+        root: warn
+        io:
+            github:
+                caioosm: trace
+        org:
+            springframework:
+                web: debug
+                security: trace
+
+
+springdoc:
+  override-with-generic-response: false

@@ -3,6 +3,11 @@ package io.github.caioosm.libraryapi.controller;
 import java.net.URI;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("livros")
 @RequiredArgsConstructor
+@Tag(name = "Livros")
 public class LivroController implements GenericController {
     private final LivroService livroService;
 
@@ -35,6 +41,12 @@ public class LivroController implements GenericController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @Operation(summary = "Cadastrar livro", description = "Cadastrar um novo livro")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Livro Cadastrado com sucesso!"),
+            @ApiResponse(responseCode = "422", description = "Erro de validacao!"),
+            @ApiResponse(responseCode = "409", description = "Livro ja existente!"),
+    })
     public ResponseEntity<Object> cadastrarLivro(@RequestBody @Valid LivroDTO livroDTO) {
         //Mapear DTO para entidade
         Livro livro = livroMapper.toEntity(livroDTO);
@@ -47,6 +59,11 @@ public class LivroController implements GenericController {
 
     @GetMapping("{id}")
     @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @Operation(summary = "Buscar livro por id", description = "Retorna dados de um livro passando o ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Livro encontrado!"),
+            @ApiResponse(responseCode = "404", description = "Livro nao encontrado!"),
+    })
     public ResponseEntity<LivroResponseDTO> buscarLivroPorId(@PathVariable("id") String id) {
         return livroService.buscarLivroPorId(UUID.fromString(id))
                 .map(livro -> {
@@ -57,6 +74,11 @@ public class LivroController implements GenericController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @Operation(summary = "Deletar Livro", description = "Deletar um livro na base de dados")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Livro Deletado com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Livro nao encontrado!"),
+    })
     public ResponseEntity<Object> deletarLivro(@PathVariable("id") String id) {
         return livroService.buscarLivroPorId(UUID.fromString(id))
                 .map(livro -> {
@@ -67,6 +89,11 @@ public class LivroController implements GenericController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @Operation(summary = "Pesquisa de livros por parametro", description = "Buscar um livro na base passando parametros")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Livro(s) encontrado(s)!"),
+            @ApiResponse(responseCode = "404", description = "Nenhum livro encontrado"),
+    })
     public ResponseEntity<Page<LivroResponseDTO>> pesquisa(
             @RequestParam(value = "isbn", required = false)
             String isbn,
@@ -92,6 +119,12 @@ public class LivroController implements GenericController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @Operation(summary = "Atualizar Livro", description = "Atualizar livro existente na base")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Livro Atualizado com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Livro nao encontrado!"),
+            @ApiResponse(responseCode = "409", description = "Livro ja cadastrado!"),
+    })
     public ResponseEntity<Object> atualizar(@PathVariable("id") String id, @RequestBody @Valid LivroDTO livroDTO) {
         return livroService.buscarLivroPorId(UUID.fromString(id))
                 .map(livro -> {
