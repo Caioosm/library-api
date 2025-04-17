@@ -43,6 +43,10 @@ public class SecurityConfiguration { // resource server configuration
                 .formLogin(configurer -> {
                     configurer.loginPage("/login");
                 })
+                /*
+                http basic caso seja necessario o cadastro do client, ja que n tem outro jeito por enquanto kk
+                 */
+//                .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/login").permitAll();
                     authorize.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
