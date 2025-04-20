@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("clients")
 @Tag(name = "Clients")
+@Slf4j
 public class ClientController {
     
     private final ClientService service;
@@ -35,6 +37,7 @@ public class ClientController {
             @ApiResponse(responseCode = "422", description = "Erro de validacao!")
     })
     public void salvar(@RequestBody Client client) {
+        log.info("Registrando novo client: {}, com Scope: {}", client.getClientId(), client.getScope());
         service.salvar(client);
     }
     
