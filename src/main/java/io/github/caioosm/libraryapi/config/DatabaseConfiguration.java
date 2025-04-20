@@ -2,7 +2,9 @@ package io.github.caioosm.libraryapi.config;
 
 import javax.sql.DataSource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -10,6 +12,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
+@Slf4j
 public class DatabaseConfiguration {
     
     @Value("${spring.datasource.url}")
@@ -31,8 +34,11 @@ public class DatabaseConfiguration {
         return ds;
     }
 
-    // @Bean
+    @Bean
     public DataSource hikariDataSource(){
+
+        log.info("Iniciando conexao ao banco de dados: {}", url);
+
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
